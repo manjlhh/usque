@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -45,6 +46,17 @@ func LoadConfig(configPath string) error {
 	}
 	defer func() { _ = file.Close() }()
 
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&AppConfig); err != nil {
+		return fmt.Errorf("failed to decode config file: %v", err)
+	}
+
+	ConfigLoaded = true
+
+	return nil
+}
+
+func LoadConfigFile(file io.Reader) error {
 	decoder := json.NewDecoder(file)
 	if err := decoder.Decode(&AppConfig); err != nil {
 		return fmt.Errorf("failed to decode config file: %v", err)
